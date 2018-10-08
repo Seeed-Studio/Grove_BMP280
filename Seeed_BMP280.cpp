@@ -61,7 +61,7 @@ uint32_t BMP280::getPressure(void)
   var1 = (((((int64_t)1)<<47)+var1))*((int64_t)dig_P1)>>33;
   if (var1 == 0)
   {
-  return 0; // avoid exception caused by division by zero
+    return 0; // avoid exception caused by division by zero
   }
   p = 1048576-adc_P;
   p = (((p<<31)-var2)*3125)/var1;
@@ -88,7 +88,10 @@ uint8_t BMP280::bmp280Read8(uint8_t reg)
   Wire.endTransmission();
 
   Wire.requestFrom(BMP280_ADDRESS, 1);
-  while(!Wire.available());
+  // return 0 if slave didn't response
+  if(!Wire.available()) 
+    return _INVALID_DATA;
+
   return Wire.read();
 }
 
@@ -101,7 +104,10 @@ uint16_t BMP280::bmp280Read16(uint8_t reg)
   Wire.endTransmission();
 
   Wire.requestFrom(BMP280_ADDRESS, 2);
-  while(Wire.available()<2);
+  // return 0 if slave didn't response
+  if(!Wire.available()) 
+    return _INVALID_DATA;
+
   msb = Wire.read();
   lsb = Wire.read();
 
@@ -133,7 +139,11 @@ uint32_t BMP280::bmp280Read24(uint8_t reg)
   Wire.endTransmission();
 
   Wire.requestFrom(BMP280_ADDRESS, 3);
-  while(Wire.available()<3);
+
+  // return 0 if slave didn't response
+  if(!Wire.available()) 
+    return _INVALID_DATA;
+
   data = Wire.read();
   data <<= 8;
   data |= Wire.read();
