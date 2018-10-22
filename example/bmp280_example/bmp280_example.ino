@@ -36,13 +36,14 @@ BMP280 bmp280;
 void setup()
 {
   Serial.begin(9600);
-  if(!bmp280.init()){
-    Serial.println("Device error!");
+  if(!bmp280.init()) {
+    Serial.println("Device not connected or broken!");
   }
 }
 
 void loop()
 {
+
   float pressure;
   
   //get and print temperatures
