@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define _INVALID_DATA 0
+#define _INVALID_DATA 999999
 
 #define BMP280_ADDRESS   0x77
 
@@ -34,12 +34,14 @@
 
 class BMP280
 {
-public:
-  bool init(void);
+public:  
+  bool init(uint8_t i2c_addr = BMP280_ADDRESS);
   float getTemperature(void);
   uint32_t getPressure(void);
   float calcAltitude(float pressure);
 private:
+  bool isTransport_OK;
+  uint8_t _address;
   // Calibratino data
   uint16_t dig_T1;
   int16_t dig_T2;
