@@ -4,8 +4,6 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define _INVALID_DATA 999999
-
 #define BMP280_ADDRESS   0x77
 
 #define BMP280_REG_DIG_T1    0x88
@@ -31,6 +29,7 @@
 #define BMP280_REG_PRESSUREDATA    0xF7
 #define BMP280_REG_TEMPDATA        0xFA
 
+#define _INVALID_DATA NULL
 
 class BMP280
 {
