@@ -1,13 +1,25 @@
 #include "Seeed_BMP280.h"
 
+// #define BMP280_DEBUG_PRINT
+
 bool BMP280::init(int i2c_addr)
 {
+  uint8_t chip_id = 0;
+  uint8_t retry = 0;
+  
   _devAddr = i2c_addr;
   Wire.begin();
 
-  if(bmp280Read8(BMP280_REG_CHIPID) != 0x58)
-    return false;
-
+  while((retry++ < 5) && (chip_id != 0x58))
+  {
+    chip_id = bmp280Read8(BMP280_REG_CHIPID);
+#ifdef BMP280_DEBUG_PRINT
+    Serial.print("Read chip ID: ");
+    Serial.println(chip_id);
+#endif
+    delay(100);
+  }
+  
   dig_T1 = bmp280Read16LE(BMP280_REG_DIG_T1);
   dig_T2 = bmp280ReadS16LE(BMP280_REG_DIG_T2);
   dig_T3 = bmp280ReadS16LE(BMP280_REG_DIG_T3);
@@ -105,8 +117,7 @@ uint8_t BMP280::bmp280Read8(uint8_t reg)
     isTransport_OK = false;
     return 0;
   } else if(isTransport_OK == false){
-    isTransport_OK = true;
-    init(_devAddr);
+    isTransport_OK = true;    
   }    
 
   return Wire.read();
@@ -165,8 +176,13 @@ uint32_t BMP280::bmp280Read24(uint8_t reg)
   if(Wire.available() < 3) {
     isTransport_OK = false;
     return 0;
-  } else {
-    isTransport_OK = true;
+  } else if(isTransport_OK == false) {
+    isTransport_OK = true;    
+    if(!init(_devAddr)) {
+#ifdef BMP280_DEBUG_PRINT      
+      Serial.println("Device not connected or broken!");
+#endif      
+    }
   }
 
   data = Wire.read();
