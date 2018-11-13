@@ -1,8 +1,8 @@
 #include "Seeed_BMP280.h"
 
-bool BMP280::init(uint8_t i2c_addr)
+bool BMP280::init(int i2c_addr)
 {
-  _address = i2c_addr;
+  _devAddr = i2c_addr;
   Wire.begin();
 
   if(bmp280Read8(BMP280_REG_CHIPID) != 0x58)
@@ -33,7 +33,7 @@ float BMP280::getTemperature(void)
   int32_t adc_T = bmp280Read24(BMP280_REG_TEMPDATA);
   // Check if the last transport successed
   if(!isTransport_OK) {
-    return _INVALID_DATA;
+    return 0;
   }
   adc_T >>= 4;
   var1 = (((adc_T >> 3) - ((int32_t)(dig_T1 << 1))) *
@@ -56,7 +56,7 @@ uint32_t BMP280::getPressure(void)
   getTemperature();
   // Check if the last transport successed
   if(!isTransport_OK) {
-    return _INVALID_DATA;
+    return 0;
   }
 
   int32_t adc_P = bmp280Read24(BMP280_REG_PRESSUREDATA);
@@ -83,7 +83,7 @@ uint32_t BMP280::getPressure(void)
 float BMP280::calcAltitude(float pressure)
 {
   if(!isTransport_OK) {
-    return _INVALID_DATA;
+    return 0;
   }
   float A = pressure/101325;
   float B = 1/5.25588;
@@ -95,19 +95,19 @@ float BMP280::calcAltitude(float pressure)
 
 uint8_t BMP280::bmp280Read8(uint8_t reg)
 {
-  Wire.beginTransmission(_address);
+  Wire.beginTransmission(_devAddr);
   Wire.write(reg);
   Wire.endTransmission();
 
-  Wire.requestFrom(_address, 1);
+  Wire.requestFrom(_devAddr, 1);
   // return 0 if slave didn't response
   if(Wire.available() < 1) {
     isTransport_OK = false;
     return 0;
-  } else {
+  } else if(isTransport_OK == false){
     isTransport_OK = true;
-  }
-    
+    init(_devAddr);
+  }    
 
   return Wire.read();
 }
@@ -116,11 +116,11 @@ uint16_t BMP280::bmp280Read16(uint8_t reg)
 {
   uint8_t msb, lsb;
 
-  Wire.beginTransmission(_address);
+  Wire.beginTransmission(_devAddr);
   Wire.write(reg);
   Wire.endTransmission();
 
-  Wire.requestFrom(_address, 2);
+  Wire.requestFrom(_devAddr, 2);
   // return 0 if slave didn't response
   if(Wire.available() < 2) {
     isTransport_OK = false;
@@ -155,11 +155,11 @@ uint32_t BMP280::bmp280Read24(uint8_t reg)
 {
   uint32_t data;
 
-  Wire.beginTransmission(_address);
+  Wire.beginTransmission(_devAddr);
   Wire.write(reg);
   Wire.endTransmission();
 
-  Wire.requestFrom(_address, 3);
+  Wire.requestFrom(_devAddr, 3);
 
   // return 0 if slave didn't response
   if(Wire.available() < 3) {
@@ -180,7 +180,7 @@ uint32_t BMP280::bmp280Read24(uint8_t reg)
 
 void BMP280::writeRegister(uint8_t reg, uint8_t val)
 {
-  Wire.beginTransmission(_address); // start transmission to device
+  Wire.beginTransmission(_devAddr); // start transmission to device
   Wire.write(reg);       // send register address
   Wire.write(val);         // send value to write
   Wire.endTransmission();     // end transmission
