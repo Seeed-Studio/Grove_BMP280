@@ -1,4 +1,4 @@
-# Grove_BMP280
+# Grove_BMP280  [![Build Status](https://travis-ci.com/Seeed-Studio/Grove_BMP280.svg?branch=master)](https://travis-ci.com/Seeed-Studio/Grove_BMP280)
 ------------
 
 <img src=https://raw.githubusercontent.com/SeeedDocument/Grove-Barometer_Sensor-BMP280/master/img/Grove-Barometer_Sensor-BMP280-Components_1200_s.jpg width=auto>
