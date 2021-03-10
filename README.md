@@ -7,7 +7,9 @@
 
 Thanks to Bosch, now we’ve got a high-precision environmental sensor at even lower cost, the Grove – Barometer Sensor(BMP280). It is based on their new BMP280 sensor, which is an upgraded version of the old BMP180 used in Grove – Barometer Sensor (BMP180). The module provides precise measurement of barometric pressure and temperature in the environment. The air pressure can be measured in a range from 300 hPa to 1100hPa with ±1.0 hPa absolute accuracy. As for the temperature the sensor works perfectly for temperatures between - 40 and 85 with an accuracy of ±1.
 
-Owing to its high accuracy on measuring the pressure, and the pressure changes with altitude, we can calculate the altitude with ±1 meter accuracy, which makes it a precise altimeter as well. Another great thing about this module is that, you don’t even need to worry about the I2C collisions as it provides both I2C and SPI interfaces. To use SPI, simply de-solder the bonding pads on the back. If you go with I2C, the board also provides 2 I2C addresses for you to select as you want.
+Owing to its high accuracy on measuring the pressure, and the pressure changes with altitude, we can calculate the altitude with ±1 meter accuracy, which makes it a precise altimeter as well. However, for the formula to work properly, you must update the mean sea-level pressure. See the updated `calcAltitude()` function and example. (@Kongduino)
+
+Another great thing about this module is that, you don’t even need to worry about the I2C collisions as it provides both I2C and SPI interfaces. To use SPI, simply de-solder the bonding pads on the back. If you go with I2C, the board also provides 2 I2C addresses for you to select as you want.
 
 More information please visit [wiki page](http://wiki.seeedstudio.com/Grove-Barometer_Sensor-BMP280/).
 
