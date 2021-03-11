@@ -34,7 +34,8 @@ class BMP280 {
     bool init(int i2c_addr = BMP280_ADDRESS);
     float getTemperature(void);
     uint32_t getPressure(void);
-    float calcAltitude(float pressure);
+    float calcAltitude(float p0);
+    float calcAltitude(float p0, float p1, float t);
   private:
     bool isTransport_OK;
     int _devAddr;
