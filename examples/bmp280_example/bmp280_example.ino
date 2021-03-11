@@ -6,7 +6,8 @@
     Website    : www.seeedstudio.com
     Author     : Lambor, CHN
     Create Time:
-    Change Log :
+    Change Log :  2021/03/11 by @Kongduino
+                  Reworked example to display true altitude based on MSL
 
     The MIT License (MIT)
 
@@ -28,38 +29,75 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
+#undef max
+#undef min
+#include <string>
+
 #include "Seeed_BMP280.h"
 #include <Wire.h>
+#include <ArduinoJson.h>
+// http://librarymanager/All#ArduinoJSON
 
 BMP280 bmp280;
+#define INTERVAL 2000
+double t0;
+uint32_t MSL = 102009; // Mean Sea Level in Pa
 
 void setup() {
-    Serial.begin(9600);
-    if (!bmp280.init()) {
-        Serial.println("Device not connected or broken!");
-    }
+  Serial.begin(115200);
+  delay(2000);
+  Serial.println("\n\nBMP280 test");
+  if (!bmp280.init()) {
+    Serial.println("Device not connected or broken!");
+  }
 }
 
 void loop() {
-
-    float pressure;
+  double t1 = millis();
+  if (t1 - t0 > INTERVAL) {
+    float p1;
 
     //get and print temperatures
     Serial.print("Temp: ");
-    Serial.print(bmp280.getTemperature());
-    Serial.println("C"); // The unit for  Celsius because original arduino don't support speical symbols
-
+    float t = bmp280.getTemperature();
+    Serial.print(t);
+    Serial.println("C");
     //get and print atmospheric pressure data
+    Serial.print("MSL: ");
+    Serial.print(MSL / 100.0);
+    Serial.println(" HPa");
     Serial.print("Pressure: ");
-    Serial.print(pressure = bmp280.getPressure());
-    Serial.println("Pa");
-
+    p1 = bmp280.getPressure();
+    Serial.print(p1 / 100.0);
+    Serial.println(" HPa");
     //get and print altitude data
+    //get and print altitude data
+    float a = bmp280.calcAltitude(MSL, p1, t);
     Serial.print("Altitude: ");
-    Serial.print(bmp280.calcAltitude(pressure));
-    Serial.println("m");
-
-    Serial.println("\n");//add a line between output of different times.
-
-    delay(1000);
+    Serial.print(a);
+    Serial.println(" m");
+    Serial.println("\n");
+    t0 = millis();
+  }
+  if (Serial.available()) {
+    char mb[255];
+    uint8_t ix = 0;
+    while (Serial.available()) {
+      mb[ix++] = Serial.read();
+    }
+    mb[ix] = 0;
+    Serial.println("Incoming:");
+    Serial.println(mb);
+    StaticJsonDocument<200> doc;
+    DeserializationError error = deserializeJson(doc, mb);
+    if (!error) {
+      float newMSL = doc["MSL"];
+      Serial.print("New MSL: "); Serial.println(newMSL);
+      if (newMSL > 0.0) {
+        MSL = newMSL * 100;
+      }
+    } else {
+      Serial.println("Parse error!");
+    }
+  }
 }
