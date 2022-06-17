@@ -62,6 +62,7 @@ void loop() {
     float t = bmp280.getTemperature();
     Serial.print(t);
     Serial.println("C");
+    
     //get and print atmospheric pressure data
     Serial.print("MSL: ");
     Serial.print(MSL / 100.0);
@@ -70,7 +71,7 @@ void loop() {
     p1 = bmp280.getPressure();
     Serial.print(p1 / 100.0);
     Serial.println(" HPa");
-    //get and print altitude data
+
     //get and print altitude data
     float a = bmp280.calcAltitude(MSL, p1, t);
     Serial.print("Altitude: ");

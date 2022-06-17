@@ -7,6 +7,7 @@ bool BMP280::init(int i2c_addr) {
   uint8_t retry = 0;
   _devAddr = i2c_addr;
   Wire.begin();
+  Wire.setClock(400000);
   while ((retry++ < 5) && (chip_id != 0x58)) {
     chip_id = bmp280Read8(BMP280_REG_CHIPID);
 #ifdef BMP280_DEBUG_PRINT
@@ -78,21 +79,9 @@ uint32_t BMP280::getPressure(void) {
 
 float BMP280::calcAltitude(float p0, float p1, float t) {
   float C;
-  Serial.print("p0 = ");
-  Serial.println(p0);
-  Serial.print("p1 = ");
-  Serial.println(p1);
-  Serial.print("t = ");
-  Serial.println(t);
   C = (p0 / p1);
-  Serial.print("C = ");
-  Serial.println(C);
   C = pow(C, (1 / 5.25588)) - 1.0;
-  Serial.print("C = ");
-  Serial.println(C);
   C = (C * (t + 273.15)) / 0.0065;
-  Serial.print("C = ");
-  Serial.println(C);
   return C;
 }
 
