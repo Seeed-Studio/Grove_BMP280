@@ -7,7 +7,6 @@ bool BMP280::init(int i2c_addr) {
   uint8_t retry = 0;
   _devAddr = i2c_addr;
   Wire.begin();
-  Wire.setClock(400000);
   while ((retry++ < 5) && (chip_id != 0x58)) {
     chip_id = bmp280Read8(BMP280_REG_CHIPID);
 #ifdef BMP280_DEBUG_PRINT
