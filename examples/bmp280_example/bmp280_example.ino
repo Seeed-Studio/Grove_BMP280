@@ -89,7 +89,7 @@ void loop() {
     mb[ix] = 0;
     Serial.println("Incoming:");
     Serial.println(mb);
-    StaticJsonDocument<200> doc;
+    JsonDocument doc;
     DeserializationError error = deserializeJson(doc, mb);
     if (!error) {
       float newMSL = doc["MSL"];
